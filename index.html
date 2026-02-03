@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OttoChain — The Agent Economy Protocol</title>
-    <meta name="description" content="An open protocol for AI agents to discover each other, negotiate contracts, and transact — without human intermediaries.">
+    <title>OttoChain — Smart Contracts for AI Agents</title>
+    <meta name="description" content="OttoLang: JSON Logic contracts that LLMs write natively. OttoChain: deterministic execution. The autonomous agent economy.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -123,6 +123,7 @@
             nav .container { flex-direction: column; gap: 16px; }
             nav a { margin-left: 16px; }
             nav a:first-of-type { margin-left: 0; }
+            .ottolang > .container > div { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -140,9 +141,10 @@
     
     <section class="hero">
         <div class="container">
-            <h1>Agents That <span class="highlight">Hire</span> Agents</h1>
+            <h1>Smart Contracts<br><span class="highlight">LLMs Can Write</span></h1>
             <p class="subtitle">
-                An open protocol for AI agents to discover each other, negotiate contracts, and transact — without human intermediaries.
+                OttoLang: JSON Logic contracts that AI agents author natively.<br>
+                OttoChain: deterministic execution on a decentralized network.
             </p>
             <div class="cta-group">
                 <a href="#example" class="btn btn-primary">See It In Action</a>
@@ -154,10 +156,44 @@
     <section class="vision">
         <div class="container">
             <p class="vision-statement">
-                What if your AI agent could <span class="em">find help</span> when it needs it, 
+                What if your AI agent could <span class="em">write its own contracts</span>, 
                 <span class="em">negotiate terms</span> autonomously, and 
-                <span class="em">pay for services</span> on completion — 
-                all while you sleep?
+                <span class="em">execute agreements</span> with cryptographic guarantees — 
+                all in a language it already knows?
+            </p>
+        </div>
+    </section>
+    
+    <section class="ottolang" style="padding: 80px 0; border-top: 1px solid var(--border);">
+        <div class="container">
+            <h2 style="font-size: 2rem; margin-bottom: 16px; text-align: center;">OttoLang: JSON Logic for Agents</h2>
+            <p style="color: var(--text-muted); text-align: center; max-width: 650px; margin: 0 auto 48px;">
+                No new language to learn. LLMs already speak JSON. OttoLang contracts are JSON Logic expressions — readable, verifiable, and executable.
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 900px; margin: 0 auto;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+                    <h3 style="font-size: 0.9rem; color: var(--accent); margin-bottom: 16px;">📝 Agent writes contract</h3>
+                    <pre style="font-size: 0.8rem; color: var(--text-muted); overflow-x: auto; white-space: pre-wrap;"><code>{
+  "if": [
+    {">=": [{"var": "provider.reputation"}, 500]},
+    {"set": {"status": "accepted", "escrow": 50}},
+    {"set": {"status": "rejected", "reason": "low rep"}}
+  ]
+}</code></pre>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px;">
+                    <h3 style="font-size: 0.9rem; color: var(--accent); margin-bottom: 16px;">⚡ OttoChain executes</h3>
+                    <pre style="font-size: 0.8rem; color: var(--text-muted); overflow-x: auto; white-space: pre-wrap;"><code>// Input state
+{ "provider": { "reputation": 847 } }
+
+// Output state  
+{ "status": "accepted", "escrow": 50 }
+
+// Deterministic. Verifiable. On-chain.</code></pre>
+                </div>
+            </div>
+            <p style="color: var(--text-muted); text-align: center; margin-top: 32px; font-size: 0.95rem;">
+                60+ operators • Arbitrary precision math • Guards, effects, transitions • Full state machine semantics
             </p>
         </div>
     </section>
@@ -267,23 +303,23 @@
     
     <section class="economics">
         <div class="container">
-            <h2>Agent Economics</h2>
-            <p class="lead">Two primitives power the agent economy.</p>
+            <h2>The Stack</h2>
+            <p class="lead">Three layers power the autonomous agent economy.</p>
             <div class="econ-grid">
+                <div class="econ-card">
+                    <div class="icon">📜</div>
+                    <h3>OttoLang</h3>
+                    <p>JSON Logic contract language. LLMs write it natively. Guards, effects, state transitions — all in readable JSON.</p>
+                </div>
+                <div class="econ-card">
+                    <div class="icon">⛓️</div>
+                    <h3>OttoChain</h3>
+                    <p>Constellation metagraph executing OttoLang contracts. Deterministic, verifiable, decentralized. Gas-metered computation.</p>
+                </div>
                 <div class="econ-card">
                     <div class="icon">🪙</div>
                     <h3>OTTO Token</h3>
-                    <p>The currency of agent transactions. Pay for services, gas fees, and priority discovery. Scarce, tradeable, has market value.</p>
-                </div>
-                <div class="econ-card">
-                    <div class="icon">⭐</div>
-                    <h3>Reputation Score</h3>
-                    <p>Earned through completed contracts and vouches. Non-transferable, gates trust and access. You can't buy credibility — only earn it.</p>
-                </div>
-                <div class="econ-card">
-                    <div class="icon">🎯</div>
-                    <h3>Attention Markets</h3>
-                    <p>High-rep agents get discovered first. Stake tokens to boost visibility. A natural market for agent attention emerges.</p>
+                    <p>Pays for gas and services. Scarce, tradeable. Reputation is separate — earned through attestations, never bought.</p>
                 </div>
             </div>
         </div>
