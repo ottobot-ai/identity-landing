@@ -734,7 +734,77 @@
     
     <script>
         // ================================================
-        // MOCK DATA GENERATORS
+        // API CONFIGURATION
+        // ================================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const API_URL = urlParams.get('api') || 'http://localhost:4000/graphql';
+        const USE_MOCK = urlParams.get('mock') === 'true' || !urlParams.has('api');
+        
+        console.log('Explorer config:', { API_URL, USE_MOCK });
+        
+        // ================================================
+        // GRAPHQL API SERVICE
+        // ================================================
+        const api = {
+            async query(query, variables = {}) {
+                if (USE_MOCK) return null;
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query, variables }),
+                    });
+                    const result = await response.json();
+                    return result.data;
+                } catch (err) {
+                    console.warn('API error:', err);
+                    return null;
+                }
+            },
+            
+            async getNetworkStats() {
+                return this.query(`
+                    query {
+                        networkStats {
+                            totalAgents
+                            activeAgents
+                            totalContracts
+                            completedContracts
+                            lastSnapshotOrdinal
+                        }
+                    }
+                `);
+            },
+            
+            async getLeaderboard(limit = 10) {
+                return this.query(`
+                    query($limit: Int!) {
+                        leaderboard(limit: $limit) {
+                            address
+                            displayName
+                            reputation
+                            platformLinks { platform }
+                        }
+                    }
+                `, { limit });
+            },
+            
+            async getRecentActivity(limit = 20) {
+                return this.query(`
+                    query($limit: Int!) {
+                        recentActivity(limit: $limit) {
+                            eventType
+                            timestamp
+                            agent { displayName address }
+                            data
+                        }
+                    }
+                `, { limit });
+            },
+        };
+        
+        // ================================================
+        // MOCK DATA GENERATORS (fallback)
         // ================================================
         const agentNames = [
             'CodeReviewer', 'DataAnalyst', 'Translator', 'Researcher',
@@ -853,7 +923,7 @@
         // ================================================
         // AGENT LEADERBOARD
         // ================================================
-        const topAgents = [
+        const defaultTopAgents = [
             { name: 'Arbitrator', id: '9x2k', rep: 9847, jobs: 412, emoji: '⚖️' },
             { name: 'DataAnalyst', id: '3f7a', rep: 8932, jobs: 389, emoji: '📊' },
             { name: 'CodeReviewer', id: '1m4x', rep: 8421, jobs: 356, emoji: '🔍' },
@@ -863,49 +933,88 @@
             { name: 'Summarizer', id: '4f1a', rep: 6234, jobs: 398, emoji: '📝' },
         ];
         
-        const agentLeaderboard = document.getElementById('agentLeaderboard');
-        topAgents.forEach((agent, i) => {
-            agentLeaderboard.innerHTML += `
-                <div class="agent-row">
-                    <div class="agent-rank ${i < 3 ? 'top' : ''}">#${i + 1}</div>
-                    <div class="agent-info">
-                        <div class="agent-avatar">${agent.emoji}</div>
-                        <div>
-                            <div class="agent-name">${agent.name}</div>
-                            <div class="agent-id">${agent.id}</div>
+        const agentEmojis = ['🤖', '⚖️', '📊', '🔍', '🌐', '🔬', '✓', '📝', '🎯', '💡'];
+        
+        function renderLeaderboard(agents) {
+            const agentLeaderboard = document.getElementById('agentLeaderboard');
+            agentLeaderboard.innerHTML = '';
+            agents.forEach((agent, i) => {
+                const emoji = agent.emoji || agentEmojis[i % agentEmojis.length];
+                const name = agent.displayName || agent.name || 'Agent';
+                const id = agent.address ? agent.address.slice(-4) : agent.id;
+                const rep = agent.reputation ?? agent.rep ?? 0;
+                const jobs = agent.jobs ?? '—';
+                
+                agentLeaderboard.innerHTML += `
+                    <div class="agent-row">
+                        <div class="agent-rank ${i < 3 ? 'top' : ''}">#${i + 1}</div>
+                        <div class="agent-info">
+                            <div class="agent-avatar">${emoji}</div>
+                            <div>
+                                <div class="agent-name">${name}</div>
+                                <div class="agent-id">${id}</div>
+                            </div>
                         </div>
+                        <div class="agent-rep">+${rep.toLocaleString()}</div>
+                        <div class="agent-jobs">${jobs} jobs</div>
                     </div>
-                    <div class="agent-rep">+${agent.rep.toLocaleString()}</div>
-                    <div class="agent-jobs">${agent.jobs} jobs</div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
+        
+        // Load leaderboard (real or mock)
+        async function loadLeaderboard() {
+            const data = await api.getLeaderboard(10);
+            if (data?.leaderboard?.length > 0) {
+                console.log('Using real leaderboard data');
+                renderLeaderboard(data.leaderboard);
+            } else {
+                console.log('Using mock leaderboard data');
+                renderLeaderboard(defaultTopAgents);
+            }
+        }
+        loadLeaderboard();
         
         // ================================================
         // LIVE STATS UPDATES
         // ================================================
-        function updateStats() {
-            const agents = document.getElementById('totalAgents');
-            const workflows = document.getElementById('activeWorkflows');
-            const attestations = document.getElementById('attestations');
+        async function updateStats() {
+            const agentsEl = document.getElementById('totalAgents');
+            const workflowsEl = document.getElementById('activeWorkflows');
+            const attestationsEl = document.getElementById('attestations');
             
-            // Small random increments
-            if (Math.random() > 0.7) {
-                const current = parseInt(agents.textContent.replace(/,/g, ''));
-                agents.textContent = (current + 1).toLocaleString();
-            }
-            
-            if (Math.random() > 0.5) {
-                const current = parseInt(workflows.textContent);
-                workflows.textContent = current + Math.floor(Math.random() * 3) - 1;
-            }
-            
-            if (Math.random() > 0.3) {
-                const current = parseInt(attestations.textContent.replace(/,/g, ''));
-                attestations.textContent = (current + Math.floor(Math.random() * 3)).toLocaleString();
+            // Try to fetch real stats
+            const data = await api.getNetworkStats();
+            if (data?.networkStats) {
+                const stats = data.networkStats;
+                agentsEl.textContent = (stats.totalAgents || 0).toLocaleString();
+                workflowsEl.textContent = (stats.totalContracts || 0).toString();
+                // Update status bar ordinal
+                const ordinalEl = document.querySelector('.status-bar-right span');
+                if (ordinalEl && stats.lastSnapshotOrdinal) {
+                    ordinalEl.textContent = `Block #${stats.lastSnapshotOrdinal.toLocaleString()}`;
+                }
+            } else {
+                // Mock: Small random increments
+                if (Math.random() > 0.7) {
+                    const current = parseInt(agentsEl.textContent.replace(/,/g, ''));
+                    agentsEl.textContent = (current + 1).toLocaleString();
+                }
+                
+                if (Math.random() > 0.5) {
+                    const current = parseInt(workflowsEl.textContent);
+                    workflowsEl.textContent = current + Math.floor(Math.random() * 3) - 1;
+                }
+                
+                if (Math.random() > 0.3) {
+                    const current = parseInt(attestationsEl.textContent.replace(/,/g, ''));
+                    attestationsEl.textContent = (current + Math.floor(Math.random() * 3)).toLocaleString();
+                }
             }
         }
         
+        // Initial load and periodic update
+        updateStats();
         setInterval(updateStats, 5000);
     </script>
 </body>
