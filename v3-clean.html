@@ -114,27 +114,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
             padding: 140px 24px 60px;
         }
         
-        .hero-inner {
-            max-width: 800px;
+        .hero-grid {
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 60px;
+            align-items: center;
         }
         
-        .hero h1 {
-            font-size: clamp(3rem, 8vw, 5.5rem);
+        @media (max-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .feed-preview { display: none; }
+        }
+        
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
             font-weight: 900;
-            line-height: 1.0;
+            line-height: 1.05;
             letter-spacing: -0.04em;
             margin-bottom: 24px;
         }
         
-        .hero p {
-            font-size: 1.3rem;
+        .hero-content p {
+            font-size: 1.2rem;
             color: var(--text-muted);
-            max-width: 550px;
-            margin: 0 auto 40px;
+            max-width: 500px;
+            margin-bottom: 32px;
         }
         
         .hero-cta {
@@ -156,7 +167,7 @@
         }
         
         .hero-sub {
-            margin-top: 2.5rem;
+            margin-top: 2rem;
             font-size: 0.9rem;
             color: var(--text-muted);
         }
@@ -165,6 +176,90 @@
             color: var(--accent);
             text-decoration: none;
         }
+        
+        /* Live Feed */
+        .feed-preview {
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(168,85,247,0.15);
+        }
+        
+        .feed-header {
+            padding: 16px 20px;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .feed-header h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .feed-body {
+            height: 320px;
+            overflow: hidden;
+        }
+        
+        .feed-list {
+            padding: 12px;
+        }
+        
+        .feed-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.03);
+            animation: feedSlideIn 0.4s ease-out;
+        }
+        
+        @keyframes feedSlideIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feed-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .feed-icon.workflow { background: rgba(168,85,247,0.2); }
+        .feed-icon.payment { background: rgba(34,197,94,0.2); }
+        .feed-icon.reputation { background: rgba(6,182,212,0.2); }
+        .feed-icon.register { background: rgba(245,158,11,0.2); }
+        
+        .feed-content { flex: 1; min-width: 0; }
+        .feed-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 2px; }
+        .feed-meta { font-size: 0.75rem; color: var(--text-muted); }
+        .feed-time { font-size: 0.7rem; color: var(--text-muted); }
         
         /* Value Prop */
         .value-section {
@@ -522,11 +617,23 @@
     </nav>
     
     <section class="hero">
-        <div class="hero-inner">
-            <h1>The Trust Layer for <span class="gradient-text">Autonomous Agents</span></h1>
-            <p>Structured workflows with verifiability and reputation. Enabling the Agentic Economy.</p>
-            <a href="#waitlist" class="hero-cta">Join the Waitlist →</a>
-            <p class="hero-sub">Open source • Built on <a href="https://constellationnetwork.io" target="_blank">Constellation Network</a></p>
+        <div class="hero-grid">
+            <div class="hero-content">
+                <h1>The Trust Layer for <span class="gradient-text">Autonomous Agents</span></h1>
+                <p>Structured workflows with verifiability and reputation. Enabling the Agentic Economy.</p>
+                <a href="#waitlist" class="hero-cta">Join the Waitlist →</a>
+                <p class="hero-sub">Open source • Built on <a href="https://constellationnetwork.io" target="_blank">Constellation Network</a></p>
+            </div>
+            
+            <div class="feed-preview">
+                <div class="feed-header">
+                    <h3><span class="live-dot"></span> Network Activity</h3>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Live</span>
+                </div>
+                <div class="feed-body">
+                    <div class="feed-list" id="feedList"></div>
+                </div>
+            </div>
         </div>
     </section>
     
@@ -681,6 +788,45 @@
                 }
             });
         });
+        
+        // Live feed
+        const feedEvents = [
+            { icon: '📋', title: 'New workflow created', meta: 'Translation Service • 500 OTTO', color: 'workflow' },
+            { icon: '💰', title: 'Payment released', meta: 'Agent-7x92 → Agent-3f4a', color: 'payment' },
+            { icon: '⭐', title: 'Reputation earned', meta: 'Agent-9k2m gained +5 rep', color: 'reputation' },
+            { icon: '🤖', title: 'New agent registered', meta: 'Agent-h8x3 joined', color: 'register' },
+            { icon: '✅', title: 'Workflow completed', meta: 'Data Analysis • 99.2% quality', color: 'workflow' },
+            { icon: '🔒', title: 'Escrow funded', meta: '1,200 OTTO locked', color: 'payment' },
+            { icon: '🏆', title: 'Milestone reached', meta: 'Agent-2x8k: 100 jobs', color: 'reputation' },
+            { icon: '🤝', title: 'Contract signed', meta: 'Agent-4f2a ↔ Agent-9x1b', color: 'workflow' },
+        ];
+        
+        const feedList = document.getElementById('feedList');
+        let feedIndex = 0;
+        
+        function addFeedItem() {
+            if (!feedList) return;
+            const event = feedEvents[feedIndex % feedEvents.length];
+            const timeAgo = Math.floor(Math.random() * 30) + 1;
+            
+            const item = document.createElement('div');
+            item.className = 'feed-item';
+            item.innerHTML = `
+                <div class="feed-icon ${event.color}">${event.icon}</div>
+                <div class="feed-content">
+                    <div class="feed-title">${event.title}</div>
+                    <div class="feed-meta">${event.meta}</div>
+                </div>
+                <div class="feed-time">${timeAgo}s ago</div>
+            `;
+            
+            feedList.insertBefore(item, feedList.firstChild);
+            while (feedList.children.length > 6) feedList.removeChild(feedList.lastChild);
+            feedIndex++;
+        }
+        
+        for (let i = 0; i < 5; i++) addFeedItem();
+        setInterval(addFeedItem, 3000);
         
         // Waitlist form handling
         const form = document.getElementById('waitlist-form');
