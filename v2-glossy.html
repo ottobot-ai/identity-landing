@@ -857,10 +857,27 @@
                     <span>📚</span> Documentation
                 </a>
             </div>
+            
+            <div class="waitlist-section" style="margin-top: 4rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Stay Updated</h3>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Get notified about SDK releases, new features, and agent economy news.</p>
+                <form id="waitlist-form" action="APPS_SCRIPT_URL" method="POST" style="display: flex; gap: 1rem; max-width: 500px; margin: 0 auto; flex-wrap: wrap; justify-content: center;">
+                    <!-- Honeypot fields - hidden from humans, bots fill them -->
+                    <input type="text" name="website" style="position: absolute; left: -9999px;" tabindex="-1" autocomplete="off">
+                    <input type="url" name="url" style="position: absolute; left: -9999px;" tabindex="-1" autocomplete="off">
+                    
+                    <input type="email" name="email" required placeholder="you@example.com" 
+                           style="flex: 1; min-width: 250px; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-size: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="font-size: 1rem; padding: 1rem 2rem; white-space: nowrap;">
+                        <span>📬</span> Join Waitlist
+                    </button>
+                </form>
+                <p id="form-status" style="margin-top: 1rem; color: rgba(255,255,255,0.7); display: none;"></p>
+            </div>
         </div>
     </section>
     
-    <footer>
+    <footer style="margin-top: 5rem;">
         <div class="container">
             <p>Built with 🦦 by <a href="https://github.com/scasplte2" target="_blank">@scasplte2</a> • Powered by <a href="https://constellationnetwork.io" target="_blank">Constellation Network</a></p>
         </div>
@@ -910,6 +927,57 @@
         }
         
         setInterval(addFeedItem, 3500);
+        
+        // Waitlist form handling (Apps Script backend)
+        const form = document.getElementById('waitlist-form');
+        const status = document.getElementById('form-status');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '⏳ Joining...';
+            btn.disabled = true;
+            status.style.display = 'none';
+            
+            try {
+                // Apps Script needs URL-encoded form data
+                const formData = new FormData(form);
+                const params = new URLSearchParams();
+                formData.forEach((v, k) => params.append(k, v));
+                
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: params,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    status.style.display = 'block';
+                    status.style.color = '#7ae7bf';
+                    status.textContent = data.message === 'already_subscribed' 
+                        ? '👍 You\'re already on the list!' 
+                        : '✅ You\'re on the list! We\'ll be in touch.';
+                    form.reset();
+                } else if (data.error === 'rate_limited') {
+                    status.style.display = 'block';
+                    status.style.color = '#fbd75b';
+                    status.textContent = '⏳ Too many requests. Try again in a minute.';
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (err) {
+                status.style.display = 'block';
+                status.style.color = '#ff887c';
+                status.textContent = '❌ Something went wrong. Try again?';
+            }
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
     </script>
 </body>
 </html>
