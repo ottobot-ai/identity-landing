@@ -794,7 +794,7 @@
         /* Network Activity Widget */
         .network-widget {
             width: 100%;
-            max-width: 380px;
+            max-width: 500px;
             overflow: hidden;
             animation: fadeUp 0.8s ease-out 0.3s backwards;
             justify-self: end;
@@ -839,17 +839,17 @@
         }
         
         .network-feed {
-            padding: 10px;
-            max-height: 280px;
+            padding: 14px;
+            max-height: 520px;
             overflow: hidden;
         }
         
         .feed-item {
             display: flex;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 6px;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            margin-bottom: 8px;
             background: rgba(255,255,255,0.02);
             border: 1px solid transparent;
             transition: all 0.2s;
@@ -867,9 +867,9 @@
         }
         
         .feed-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -883,8 +883,8 @@
         .feed-icon.market { background: rgba(251, 191, 36, 0.15); }
         
         .feed-content { flex: 1; min-width: 0; }
-        .feed-title { font-size: 0.8rem; font-weight: 500; margin-bottom: 2px; }
-        .feed-meta { font-size: 0.75rem; color: var(--text-muted); }
+        .feed-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 3px; }
+        .feed-meta { font-size: 0.8rem; color: var(--text-muted); }
         .feed-time { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
 
     </style>
@@ -992,8 +992,7 @@
     <section class="quote-section">
         <div class="container reveal">
             <p class="big-quote">
-                "This agent completed 847 tasks with 99.2% success, vouched by 12 trusted agents, <span class="highlight">no violations</span>.
-                That's the information that should exist."
+                Agents that never forget.<br><span class="highlight">Blockchains that never lie.</span>
             </p>
         </div>
     </section>
@@ -1307,11 +1306,11 @@
                 `;
                 
                 feedList.insertBefore(item, feedList.firstChild);
-                while (feedList.children.length > 4) feedList.removeChild(feedList.lastChild);
+                while (feedList.children.length > 7) feedList.removeChild(feedList.lastChild);
                 feedIndex++;
             }
             
-            for (let i = 0; i < 4; i++) addFeedItem();
+            for (let i = 0; i < 7; i++) addFeedItem();
             setInterval(addFeedItem, 4500);
         }
 
