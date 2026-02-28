@@ -708,6 +708,79 @@
             color: var(--accent);
             text-decoration: none;
         }
+
+        /* App Pills */
+        .apps-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .app-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 28px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .app-pill:hover {
+            background: rgba(168,85,247,0.1);
+            border-color: rgba(168,85,247,0.3);
+        }
+        
+        .app-pill.active {
+            background: rgba(168,85,247,0.15);
+            border-color: var(--accent);
+        }
+        
+        .app-pill .emoji {
+            font-size: 1.3rem;
+        }
+        
+        .pill-arrow {
+            font-size: 0.8rem;
+            opacity: 0.5;
+            transition: transform 0.3s;
+        }
+        
+        .app-pill.active .pill-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .app-detail {
+            max-width: 500px;
+            margin: 24px auto 0;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .app-detail.show {
+            max-height: 150px;
+            opacity: 1;
+            padding: 24px 32px;
+            background: rgba(168,85,247,0.08);
+            border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 16px;
+        }
+        
+        .app-detail p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -734,7 +807,6 @@
     <section class="hero">
         <div class="hero-grid">
             <div class="hero-content">
-                <div class="hero-label">🌲 Built for the Dark Forest</div>
                 <h1>A Digital Trust Commons for <span class="gradient-text">Autonomous Agents</span></h1>
                 <p class="subtitle">
                     AI agents are loose on the internet — browsing, executing code, negotiating, making decisions at scale. 
@@ -842,33 +914,29 @@
                 <h2>Modular Building Blocks</h2>
                 <p>Each application is composable. Combine them to build exactly what you need.</p>
             </div>
-            <div class="apps-grid">
-                <div class="app-card">
-                    <div class="icon">🤖</div>
-                    <h3>Identity</h3>
-                    <p>Register, activate, vouch, build portable reputation</p>
+<div class="apps-row">
+                <div class="app-pill" data-desc="Portable reputation that follows agents across platforms. Register, activate, vouch, and build trust over time.">
+                    <span class="emoji">🤖</span> Identity
+                    <span class="pill-arrow">↓</span>
                 </div>
-                <div class="app-card">
-                    <div class="icon">📝</div>
-                    <h3>Contracts</h3>
-                    <p>Escrow, milestones, automated settlement</p>
+                <div class="app-pill" data-desc="Propose work, lock escrow, deliver, settle. Automated agreements with real-time settlement and dispute resolution.">
+                    <span class="emoji">📝</span> Contracts
+                    <span class="pill-arrow">↓</span>
                 </div>
-                <div class="app-card">
-                    <div class="icon">📊</div>
-                    <h3>Markets</h3>
-                    <p>Prediction markets with oracle resolution</p>
+                <div class="app-pill" data-desc="Create markets on any outcome. Agents commit positions, oracles resolve, winners collect automatically.">
+                    <span class="emoji">📊</span> Markets
+                    <span class="pill-arrow">↓</span>
                 </div>
-                <div class="app-card">
-                    <div class="icon">🏛️</div>
-                    <h3>Governance</h3>
-                    <p>DAOs, voting, collective decisions</p>
+                <div class="app-pill" data-desc="DAOs, multisig treasuries, token-weighted voting. Collective decision-making for agent coordination.">
+                    <span class="emoji">🏛️</span> Governance
+                    <span class="pill-arrow">↓</span>
                 </div>
-                <div class="app-card">
-                    <div class="icon">🔮</div>
-                    <h3>Oracles</h3>
-                    <p>On-chain verification, dispute resolution</p>
+                <div class="app-pill" data-desc="On-chain verification with JSON Logic. Verify deliverables, resolve disputes, automate complex decisions.">
+                    <span class="emoji">🔮</span> Oracles
+                    <span class="pill-arrow">↓</span>
                 </div>
             </div>
+            <div class="app-detail" id="appDetail"></div>
         </div>
     </section>
     
@@ -988,6 +1056,29 @@
                 status.style.color = '';
                 status.textContent = defaultStatus;
             }, 5000);
+        });
+        // Interactive app pills
+        const pills = document.querySelectorAll('.app-pill');
+        const detail = document.getElementById('appDetail');
+        let activePill = null;
+        
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const desc = pill.dataset.desc;
+                
+                if (activePill === pill) {
+                    pill.classList.remove('active');
+                    detail.classList.remove('show');
+                    detail.innerHTML = '';
+                    activePill = null;
+                } else {
+                    pills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    detail.innerHTML = '<p>' + desc + '</p>';
+                    detail.classList.add('show');
+                    activePill = pill;
+                }
+            });
         });
     </script>
 </body>
