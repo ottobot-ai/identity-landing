@@ -184,12 +184,30 @@
         .hero {
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
             padding: 140px 24px 100px;
             position: relative;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
+        }
+        
+        @media (max-width: 1100px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .hero-content { order: 1; }
+            .network-widget { display: none; }
+        }
+        
+        .hero-content {
+            animation: fadeUp 0.6s ease-out;
         }
         
         .hero-badge {
@@ -197,11 +215,10 @@
             align-items: center;
             gap: 10px;
             padding: 10px 20px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             font-size: 0.9rem;
             font-weight: 500;
             color: var(--accent);
-            animation: fadeUp 0.6s ease-out;
         }
         
         .hero-badge::before {
@@ -220,13 +237,11 @@
         }
         
         .hero h1 {
-            font-size: clamp(2.75rem, 7vw, 5rem);
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 800;
             letter-spacing: -0.035em;
             line-height: 1.1;
-            max-width: 900px;
             margin-bottom: 24px;
-            animation: fadeUp 0.6s ease-out 0.1s backwards;
         }
         
         .gradient-text {
@@ -279,8 +294,10 @@
             display: flex;
             gap: 16px;
             flex-wrap: wrap;
-            justify-content: center;
-            animation: fadeUp 0.6s ease-out 0.3s backwards;
+        }
+        
+        @media (max-width: 1100px) {
+            .hero-ctas { justify-content: center; }
         }
         
         @keyframes fadeUp {
@@ -776,17 +793,11 @@
     
         /* Network Activity Widget */
         .network-widget {
-            position: absolute;
-            right: 40px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 340px;
+            width: 100%;
+            max-width: 380px;
             overflow: hidden;
-            animation: fadeUp 0.8s ease-out 0.4s backwards;
-        }
-        
-        @media (max-width: 1200px) {
-            .network-widget { display: none; }
+            animation: fadeUp 0.8s ease-out 0.3s backwards;
+            justify-self: end;
         }
         
         .network-header {
@@ -903,32 +914,36 @@
     </nav>
     
     <section class="hero">
-        <div class="hero-badge glass">Decentralized Agent Identity</div>
-        
-        <h1>A Digital Trust Commons for <span class="gradient-text">Autonomous Agents</span></h1>
-        
-        <p class="hero-subtitle">
-            AI systems are no longer passive tools—they're autonomous actors browsing, negotiating, coordinating.
-            OttoChain lets them prove who they are and carry their track record anywhere.
-        </p>
-        
-        <div class="hero-typing">
-            <span id="typingText"></span><span class="typing-cursor"></span>
-        </div>
-        
-        <div class="hero-ctas">
-            <a href="#waitlist" class="btn btn-primary">
-                Join Waitlist
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-            <a href="https://github.com/scasplte2/ottochain" class="btn btn-secondary" target="_blank">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-                View on GitHub
-            </a>
-        </div>
-        
-        <!-- Network Activity (desktop only) -->
-        <div class="network-widget glass">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge glass">Decentralized Agent Identity</div>
+                    
+                    <h1>A Digital Trust Commons for <span class="gradient-text">Autonomous Agents</span></h1>
+                    
+                    <p class="hero-subtitle">
+                        AI systems are no longer passive tools—they're autonomous actors browsing, negotiating, coordinating.
+                        OttoChain lets them prove who they are and carry their track record anywhere.
+                    </p>
+                    
+                    <div class="hero-typing">
+                        <span id="typingText"></span><span class="typing-cursor"></span>
+                    </div>
+                    
+                    <div class="hero-ctas">
+                        <a href="#waitlist" class="btn btn-primary">
+                            Join Waitlist
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </a>
+                        <a href="https://github.com/scasplte2/ottochain" class="btn btn-secondary" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Network Activity (desktop only) -->
+                <div class="network-widget glass">
             <div class="network-header">
                 <div class="network-title">
                     <span class="status-dot"></span>
@@ -937,6 +952,8 @@
                 <span class="network-badge">Mock</span>
             </div>
             <div class="network-feed" id="feedList"></div>
+        </div>
+            </div>
         </div>
     </section>
     
